@@ -62,7 +62,7 @@ export function CinematicIntro() {
 
     const smoothScroll = gsap.matchMedia();
     if (!reducedMotion) smoothScroll.add("(min-width: 768px) and (hover: hover) and (pointer: fine)", () => {
-      const lenis = new Lenis({ duration: .82, smoothWheel: true, touchMultiplier: 1.2, anchors: { offset: -100, duration: .82 } });
+      const lenis = new Lenis({ duration: .5, smoothWheel: true, touchMultiplier: 1.2, anchors: { offset: -100, duration: .5 } });
       const ticker = (time: number) => lenis.raf(time * 1000);
       lenis.on("scroll", ScrollTrigger.update);
       gsap.ticker.lagSmoothing(0);

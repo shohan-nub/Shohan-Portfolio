@@ -86,7 +86,7 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
             scrollTrigger: {
               trigger: section,
               start: "top top",
-              end: () => `+=${Math.round(Math.max(420, window.innerHeight * .55))}`,
+              end: () => `+=${Math.round(Math.max(320, window.innerHeight * .42))}`,
               pin: section,
               pinSpacing: true,
               scrub: true,
