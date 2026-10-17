@@ -39,162 +39,63 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion) return;
-
-    const desktopMotion = window.matchMedia("(min-width: 768px)").matches;
-    const aboutMotion = gsap.matchMedia();
-    gsap.utils.toArray<HTMLElement>(".story-section:not(.capability-section):not(.project-gallery):not(.immersive-projects)", root.current).forEach((section) => {
-      if (section.classList.contains("story-about")) {
-        const label = section.querySelector<HTMLElement>(".story-index");
-        const card = section.querySelector<HTMLElement>(".about-portrait-card");
-        const portrait = section.querySelector<HTMLElement>(".about-portrait-image");
-        const heading = section.querySelector<HTMLElement>(".about-heading");
-        const introduction = section.querySelector<HTMLElement>(".about-foot p");
-        const details = section.querySelectorAll<HTMLElement>(".about-details article");
-        const compactMotion = window.matchMedia("(max-width: 650px)").matches;
-        const entranceX = compactMotion ? -24 : -54;
-        const aboutTimeline = gsap.timeline({
-          scrollTrigger: { trigger: section, start: "top 76%", once: true },
-        });
-
-        if (label) aboutTimeline.fromTo(label, { autoAlpha: 0, y: 10 }, {
-          autoAlpha: 1, y: 0, duration: .45, ease: "power2.out", immediateRender: false,
-        });
-        if (card) aboutTimeline.fromTo(card, { autoAlpha: 0, x: entranceX, y: 16, rotation: -2.2 }, {
-          autoAlpha: 1, x: 0, y: 0, rotation: 0, duration: 1.05, ease: "power3.out", immediateRender: false,
-        }, "-=.12");
-        if (heading) aboutTimeline.fromTo(heading, { autoAlpha: 0, y: 18, clipPath: "inset(0 0 100% 0)" }, {
-          autoAlpha: 1, y: 0, clipPath: "inset(0 0 0% 0)", duration: .82, ease: "power3.out", immediateRender: false,
-        }, "-=.76");
-        if (portrait) aboutTimeline.fromTo(portrait, { autoAlpha: 0, y: 16 }, {
-          autoAlpha: 1, y: 0, duration: .88, ease: "power3.out", immediateRender: false,
-        }, "-=.52");
-        if (introduction) aboutTimeline.fromTo(introduction, { autoAlpha: 0, x: 24, y: 8 }, {
-          autoAlpha: 1, x: 0, y: 0, duration: .68, ease: "power3.out", immediateRender: false,
-        }, "-=.4");
-        if (details.length) aboutTimeline.fromTo(details, { autoAlpha: 0, x: 14, y: 14 }, {
-          autoAlpha: 1, x: 0, y: 0, duration: .66, stagger: .12, ease: "power3.out", immediateRender: false,
-        }, "-=.28");
-
-        aboutMotion.add("(min-width: 1000px)", () => {
-          const portraitColumn = section.querySelector<HTMLElement>(".about-portrait-column");
-          const copyColumn = section.querySelector<HTMLElement>(".about-copy");
-          if (!portraitColumn || !copyColumn) return;
-
-          const scene = gsap.timeline({
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: () => `+=${Math.round(Math.max(320, window.innerHeight * .42))}`,
-              pin: section,
-              pinSpacing: true,
-              scrub: true,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
-          });
-          scene.fromTo(portraitColumn, { y: 0 }, { y: 64, duration: .62, ease: "none", immediateRender: false }, 0)
-            .fromTo(copyColumn, { y: 0 }, { y: 64, duration: .62, ease: "none", immediateRender: false }, .42)
-            .to([portraitColumn, copyColumn], { y: 0, duration: .28, ease: "power2.inOut" }, 1.04);
-
-          return () => {
-            scene.scrollTrigger?.kill();
-            scene.kill();
-          };
-        });
-        return;
-      }
-
-      if (section.classList.contains("skills-story")) {
-        const heading = section.querySelector<HTMLElement>(".skills-story-heading");
-        const intro = section.querySelector<HTMLElement>(".skills-story-intro");
-        if (heading) gsap.fromTo(heading, { y: 20, clipPath: "inset(0 0 100% 0)" }, {
-          y: 0, clipPath: "inset(0 0 0% 0)", duration: .68, ease: "power3.out", immediateRender: false,
-          scrollTrigger: { trigger: section, start: "top 74%", once: true },
-        });
-        if (intro) gsap.fromTo(intro, { y: 14, autoAlpha: 0 }, {
-          y: 0, autoAlpha: 1, duration: .52, ease: "power2.out", immediateRender: false,
-          scrollTrigger: { trigger: section, start: "top 74%", once: true },
-        });
-        gsap.utils.toArray<HTMLElement>(".skill-editorial-card", section).forEach((card, index) => {
-          const x = index % 2 === 0 ? -14 : 14;
-          const panelReveal = gsap.timeline({
-            delay: (index % 3) * .055,
-            scrollTrigger: { trigger: card, start: "top 86%", once: true },
-          });
-          panelReveal.fromTo(card, { x, y: 20, autoAlpha: 0 }, {
-            x: 0, y: 0, autoAlpha: 1, duration: .58,
-            ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
-          });
-          const pipeline = card.querySelector<SVGPathElement>(".skill-network-illustration path:last-child");
-          if (pipeline) panelReveal.fromTo(pipeline, { strokeDashoffset: 620 }, {
-            strokeDashoffset: 0, duration: .68, ease: "power2.out", immediateRender: false,
-          }, .12);
-          const architecture = card.querySelector<HTMLElement>(".skill-architecture-visual");
-          if (architecture) panelReveal.fromTo(architecture.children, { y: 7, autoAlpha: 0 }, {
-            y: 0, autoAlpha: 1, duration: .35, stagger: .06, ease: "power2.out", immediateRender: false,
-          }, .18);
-        });
-        return;
-      }
-
-      if (section.classList.contains("story-contact")) {
-        const label = section.querySelector<HTMLElement>(".story-index");
-        const heading = section.querySelector<HTMLElement>("h2");
-        const description = section.querySelector<HTMLElement>(".contact-copy");
-        const cta = section.querySelector<HTMLElement>(".contact-email");
-        const form = section.querySelector<HTMLElement>(".contact-form");
-        const compactMotion = window.matchMedia("(max-width: 650px)").matches;
-        const contactEntrance = gsap.timeline({
-          scrollTrigger: { trigger: section, start: "top 78%", once: true },
-        });
-        if (label) contactEntrance.fromTo(label, { autoAlpha: 0, y: 9 }, {
-          autoAlpha: 1, y: 0, duration: .36, ease: "power2.out", immediateRender: false,
-        });
-        if (heading) contactEntrance.fromTo(heading, { autoAlpha: 0, y: 18, clipPath: "inset(0 0 100% 0)" }, {
-          autoAlpha: 1, y: 0, clipPath: "inset(0 0 0% 0)", duration: .56, ease: "power3.out", immediateRender: false,
-        }, "-=.12");
-        if (description) contactEntrance.fromTo(description, { autoAlpha: 0, y: 12 }, {
-          autoAlpha: 1, y: 0, duration: .42, ease: "power2.out", immediateRender: false,
-        }, "-=.22");
-        if (cta) contactEntrance.fromTo(cta, { autoAlpha: 0, y: 9 }, {
-          autoAlpha: 1, y: 0, duration: .38, ease: "power2.out", immediateRender: false,
-        }, "-=.2");
-        if (form) contactEntrance.fromTo(form, { autoAlpha: 0, x: compactMotion ? 0 : 16, y: 14 }, {
-          autoAlpha: 1, x: 0, y: 0, duration: .62, ease: "power3.out", immediateRender: false,
-        }, .12);
-        return;
-      }
-
-      const headingChars = section.querySelectorAll<HTMLElement>(".reveal-char");
-      const headings = section.querySelectorAll<HTMLElement>("h2, h3");
-      const copy = section.querySelectorAll<HTMLElement>("[data-reveal]");
-      const targets: HTMLElement[] = desktopMotion && headingChars.length ? Array.from(headingChars) : Array.from(headings);
-      if (targets.length) {
-        const charReveal = desktopMotion && headingChars.length > 0;
-        gsap.fromTo(targets, charReveal ? { yPercent: 110, autoAlpha: 0, rotate: 2 } : { y: 22, autoAlpha: 0 }, {
-          ...(charReveal ? { yPercent: 0, rotate: 0 } : { y: 0 }), autoAlpha: 1,
-          duration: .65, stagger: charReveal ? .012 : .06, ease: "power3.out", immediateRender: false,
-          scrollTrigger: { trigger: section, start: "top 76%", once: true },
-        });
-      }
-      if (copy.length) gsap.fromTo(copy, { y: 24, autoAlpha: 0 }, {
-        y: 0, autoAlpha: 1, duration: .65, stagger: .1, ease: "power2.out", immediateRender: false,
-        scrollTrigger: { trigger: section, start: "top 74%", once: true },
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const about = root.current?.querySelector<HTMLElement>(".story-about");
+    if (about) {
+      const label = about.querySelector<HTMLElement>(".story-index");
+      const heading = about.querySelector<HTMLElement>(".about-heading");
+      const intro = about.querySelector<HTMLElement>(".about-foot p");
+      const details = about.querySelectorAll<HTMLElement>(".about-details article");
+      const portrait = about.querySelector<HTMLElement>(".about-portrait-card");
+      const textTargets = [label, heading, intro, ...Array.from(details)]
+        .filter((target): target is HTMLElement => target !== null);
+      const entrance = gsap.timeline({
+        defaults: { ease: "power2.out" },
+        scrollTrigger: { trigger: about, start: "top 76%", once: true },
       });
-    });
+      if (portrait) entrance.fromTo(portrait, { autoAlpha: 0, y: 24 }, {
+        autoAlpha: 1, y: 0, duration: .7, clearProps: "opacity,visibility,transform", immediateRender: false,
+      }, 0);
+      if (textTargets.length) entrance.fromTo(textTargets, { autoAlpha: 0, y: 16 }, {
+        autoAlpha: 1, y: 0, duration: .62, stagger: .07, clearProps: "opacity,visibility,transform", immediateRender: false,
+      }, .12);
+    }
+
+    const skills = root.current?.querySelector<HTMLElement>(".skills-story");
+    if (skills) {
+      const heading = skills.querySelector<HTMLElement>(".skills-story-heading");
+      const intro = skills.querySelector<HTMLElement>(".skills-story-intro");
+      const cards = skills.querySelectorAll<HTMLElement>(".skill-editorial-card");
+      const skillEntrance = gsap.timeline({ scrollTrigger: { trigger: skills, start: "top 72%", once: true } });
+      if (heading) skillEntrance.fromTo(heading, { autoAlpha: 0, y: 18 }, {
+        autoAlpha: 1, y: 0, duration: .52, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+      }, 0);
+      if (intro) skillEntrance.fromTo(intro, { autoAlpha: 0, y: 10 }, {
+        autoAlpha: 1, y: 0, duration: .42, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+      }, .12);
+      if (cards.length) skillEntrance.fromTo(cards, { autoAlpha: 0, y: 20 }, {
+        autoAlpha: 1, y: 0, duration: .5, stagger: .07, ease: "power2.out",
+        clearProps: "opacity,visibility,transform", immediateRender: false,
+      }, .24);
+    }
+
+    const contact = root.current?.querySelector<HTMLElement>(".story-contact");
+    if (contact) {
+      const copy = contact.querySelector<HTMLElement>(".contact-copy-block");
+      const form = contact.querySelector<HTMLElement>(".contact-form");
+      const endnote = contact.querySelector<HTMLElement>(".contact-endnote");
+      const contactEntrance = gsap.timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: contact, start: "top 78%", once: true } });
+      if (copy) contactEntrance.fromTo(copy, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .62, clearProps: "opacity,visibility,transform", immediateRender: false }, 0);
+      if (form) contactEntrance.fromTo(form, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .62, clearProps: "opacity,visibility,transform", immediateRender: false }, .12);
+      if (endnote) contactEntrance.fromTo(endnote, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .42, clearProps: "opacity,visibility,transform", immediateRender: false }, .24);
+    }
 
     const footer = root.current?.querySelector<HTMLElement>(".portfolio-footer");
-    const footerLines = footer?.querySelectorAll<HTMLElement>("p");
-    if (footer && footerLines?.length) gsap.fromTo(footerLines, { autoAlpha: 0, y: 9 }, {
-      autoAlpha: 1, y: 0, duration: .48, stagger: .08, ease: "power2.out", immediateRender: false,
-      scrollTrigger: { trigger: footer, start: "top 94%", once: true },
+    if (footer) gsap.fromTo(footer, { autoAlpha: 0, y: 8 }, {
+      autoAlpha: 1, y: 0, duration: .38, ease: "power2.out", clearProps: "opacity,visibility,transform",
+      immediateRender: false, scrollTrigger: { trigger: footer, start: "top 94%", once: true },
     });
-
-    return () => aboutMotion.revert();
-
-  }, { scope: root, dependencies: [projects.length, skills.length], revertOnUpdate: true });
+  }, { scope: root });
 
   const displayProjects = projects;
   const webAppProjects = displayProjects.filter((project) => (project.project_section ?? "web_app") === "web_app");
@@ -211,7 +112,7 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
         <aside className="about-portrait-column" aria-label="Portrait of Fazle Rabby Shohan">
           <div className="about-portrait-card">
             <span className="about-portrait-orbit" aria-hidden="true" />
-            <Image className="about-portrait-image" src="/me2.png" alt="Fazle Rabby Shohan" fill sizes="(max-width: 650px) 84vw, (max-width: 999px) 38vw, 34vw" onLoad={() => ScrollTrigger.refresh()} />
+            <Image className="about-portrait-image" src="/me2.png" alt="Fazle Rabby Shohan" fill sizes="(max-width: 650px) 84vw, (max-width: 999px) 38vw, 34vw" />
             <span className="about-portrait-label">DEVELOPER <i /> DHAKA, BD</span>
           </div>
         </aside>

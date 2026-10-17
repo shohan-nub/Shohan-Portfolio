@@ -363,6 +363,115 @@
   .immersive-artwork { aspect-ratio: 1.5; min-height: 260px; }
 }
 
+/* Keep editorial cards, project showcases, and controls on the same glass scale. */
+.capability-card,
+.cap-card-two,
+.cap-card-three {
+  border-color: rgba(255, 255, 255, .88);
+  box-shadow: 0 14px 38px rgba(8, 76, 104, .06), inset 0 1px rgba(255, 255, 255, .96);
+}
+.gallery-backdrop {
+  border-color: rgba(255, 255, 255, .96);
+  background:
+    radial-gradient(ellipse at 48% 36%, rgba(166, 230, 238, .31), transparent 46%),
+    linear-gradient(140deg, rgba(255, 255, 255, .84), rgba(209, 242, 245, .54));
+  box-shadow: 0 20px 54px rgba(16, 42, 67, .065), inset 0 1px rgba(255, 255, 255, .98);
+}
+.website-browser {
+  border-color: rgba(255, 255, 255, .98);
+  background: linear-gradient(145deg, rgba(255, 255, 255, .9), rgba(234, 245, 249, .78));
+  box-shadow: 0 18px 42px rgba(16, 42, 67, .1), inset 0 1px rgba(255, 255, 255, .98);
+}
+.gallery-side {
+  border-color: rgba(255, 255, 255, .9);
+  box-shadow: 0 12px 30px rgba(16, 42, 67, .07), inset 0 1px rgba(255, 255, 255, .92);
+}
+.gallery-buttons button {
+  border-color: rgba(8, 126, 164, .24);
+  background: linear-gradient(145deg, rgba(255, 255, 255, .9), rgba(225, 242, 247, .76));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .96);
+}
+.gallery-buttons button:focus-visible,
+.gallery-side:focus-visible,
+.gallery-project-links a:focus-visible,
+.gallery-project-links .gallery-link-button:focus-visible,
+.immersive-project-actions a:focus-visible,
+.immersive-artwork-link:focus-visible {
+  outline: 3px solid rgba(0, 140, 176, .4);
+  outline-offset: 3px;
+}
+.immersive-panel {
+  border-color: rgba(255, 255, 255, .98);
+  box-shadow: 0 18px 48px rgba(16, 42, 67, .075), inset 0 1px rgba(255, 255, 255, .98);
+}
+.immersive-artwork {
+  border-color: rgba(255, 255, 255, .98);
+  box-shadow: 0 12px 32px rgba(16, 42, 67, .09), inset 0 1px rgba(255, 255, 255, .98);
+}
+.immersive-ambient {
+  opacity: .68;
+  filter: blur(4px);
+}
+.immersive-project-actions .immersive-view-project {
+  border-color: rgba(255, 255, 255, .76);
+  box-shadow: 0 8px 18px rgba(8, 126, 164, .16), inset 0 1px rgba(255, 255, 255, .35);
+}
+.skill-editorial-card {
+  border-color: rgba(255, 255, 255, .96);
+  box-shadow: 0 14px 38px rgba(16, 42, 67, .06), inset 0 1px rgba(255, 255, 255, .99);
+}
+.skill-editorial-card:hover {
+  box-shadow: 0 16px 40px rgba(16, 42, 67, .07), inset 0 1px rgba(255, 255, 255, .99);
+}
+
+@media (max-width: 760px) {
+  .gallery-backdrop,
+  .immersive-panel,
+  .skill-editorial-card {
+    box-shadow: 0 10px 28px rgba(16, 42, 67, .055), inset 0 1px rgba(255, 255, 255, .98);
+  }
+}
+
+@media (min-width: 1000px) {
+  #work {
+    isolation: isolate;
+    z-index: 0;
+    overflow: visible;
+  }
+  #web-design {
+    position: relative;
+    z-index: 1;
+  }
+  .immersive-projects--horizontal .immersive-viewport {
+    height: min(73svh, 780px);
+    overflow: hidden;
+  }
+  .immersive-projects--horizontal .immersive-track {
+    display: flex;
+    align-items: stretch;
+    width: max-content;
+    height: 100%;
+    gap: clamp(24px, 4vw, 60px);
+    margin: 0;
+    padding: 0 max(7.2vw, calc((100vw - 1320px) / 2));
+    will-change: transform;
+  }
+  .immersive-projects--horizontal .immersive-panel {
+    flex: 0 0 min(72vw, 1040px);
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+  .immersive-projects--horizontal .immersive-artwork-link,
+  .immersive-projects--horizontal .immersive-artwork {
+    height: 100%;
+  }
+  .immersive-projects--horizontal .immersive-artwork {
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+}
+
 /* Keep compact controls easy to reach on touch screens without changing their visual treatment. */
 @media (pointer: coarse) {
   .site-header a { position: relative; min-height: 44px; display: inline-flex; align-items: center; }
@@ -392,8 +501,8 @@
 .skills-story-heading em { color: #087ea4; font-family: Georgia,serif; font-weight: 400; }
 .skills-story-intro { max-width: 38ch; margin: 0 0 5px; color: #647987; font-size: 14px; line-height: 1.75; }
 .skills-editorial-grid { display: grid; grid-template-columns: repeat(12,minmax(0,1fr)); grid-auto-rows: minmax(160px,auto); gap: clamp(12px,1.6vw,20px); }
-.skill-editorial-card { position: relative; min-width: 0; padding: clamp(18px,2.2vw,28px); overflow: hidden; border: 1px solid rgba(255,255,255,.9); border-radius: 25px; background: linear-gradient(145deg,rgba(225,242,247,.94),rgba(212,234,243,.8)); backdrop-filter: blur(12px); box-shadow: 0 18px 46px rgba(16,42,67,.065),inset 0 1px rgba(255,255,255,.98); transition: transform .28s ease,box-shadow .28s ease; }
-.skill-editorial-card:hover { transform: translateY(-2px); box-shadow: 0 21px 48px rgba(16,42,67,.075),inset 0 1px rgba(255,255,255,.95); }
+.skill-editorial-card { position: relative; min-width: 0; padding: clamp(18px,2.2vw,28px); overflow: hidden; border: 1px solid rgba(255,255,255,.9); border-radius: 25px; background: linear-gradient(145deg,rgba(225,242,247,.94),rgba(212,234,243,.8)); backdrop-filter: blur(12px); box-shadow: 0 18px 46px rgba(16,42,67,.065),inset 0 1px rgba(255,255,255,.98); transition: box-shadow .28s ease; }
+.skill-editorial-card:hover { box-shadow: 0 21px 48px rgba(16,42,67,.075),inset 0 1px rgba(255,255,255,.95); }
 .skill-card-frontend { grid-column: 1 / span 7; grid-row: 1; }
 .skill-card-ai { grid-column: 8 / span 5; grid-row: 1; background: radial-gradient(ellipse at 85% 20%,rgba(138,205,221,.34),transparent 42%),linear-gradient(145deg,rgba(225,242,247,.97),rgba(212,234,243,.9)); }
 .skill-card-backend { grid-column: 1 / span 7; grid-row: 2; }

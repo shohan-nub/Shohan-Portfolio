@@ -25,23 +25,21 @@ export function CapabilityShowcase() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) return;
 
-    const heading = root.current?.querySelector<HTMLElement>(".capability-intro h2");
-    if (heading) gsap.fromTo(heading, { y: 30, clipPath: "inset(0 0 100% 0)" }, {
-      y: 0, clipPath: "inset(0 0 0% 0)", duration: .7, ease: "power3.out", immediateRender: false,
-      scrollTrigger: { trigger: heading, start: "top 84%", once: true },
-    });
-
-    const cards = gsap.utils.toArray<HTMLElement>(".capability-card", root.current);
-    cards.forEach((card, index) => {
-      const x = card.classList.contains("capability-design-dev") || card.classList.contains("capability-ai-automation") ? -16
-        : card.classList.contains("capability-commerce-management") || card.classList.contains("capability-backend-data") ? 16 : 0;
-      gsap.fromTo(card, { x, y: 24, autoAlpha: 0 }, {
-        x: 0, y: 0, autoAlpha: 1,
-        duration: .58, delay: index * .07, ease: "power2.out",
-        clearProps: "opacity,visibility", immediateRender: false,
-        scrollTrigger: { trigger: card, start: "top 88%", once: true },
-      });
-    });
+    const section = root.current;
+    if (!section) return;
+    const heading = section.querySelector<HTMLElement>(".capability-intro h2");
+    const intro = section.querySelector<HTMLElement>(".capability-intro > p");
+    const cards = section.querySelectorAll<HTMLElement>(".capability-card");
+    const entrance = gsap.timeline({ scrollTrigger: { trigger: section, start: "top 72%", once: true } });
+    if (heading) entrance.fromTo(heading, { autoAlpha: 0, y: 18 }, {
+      autoAlpha: 1, y: 0, duration: .52, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+    }, .08);
+    if (intro) entrance.fromTo(intro, { autoAlpha: 0, y: 10 }, {
+      autoAlpha: 1, y: 0, duration: .42, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+    }, .16);
+    if (cards.length) entrance.fromTo(cards, { autoAlpha: 0, y: 20 }, {
+      autoAlpha: 1, y: 0, duration: .5, stagger: .07, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+    }, .28);
   }, { scope: root });
 
   return <section className="story-section capability-section" id="capabilities" ref={root} aria-labelledby="capability-heading">
@@ -108,19 +106,14 @@ export function ProjectGallery({ projects, unavailable }: { projects: Project[];
       return;
     }
     const galleryHeading = root.current?.querySelector<HTMLElement>(".gallery-head");
-    const galleryLabel = galleryHeading?.querySelector<HTMLElement>(".story-index");
-    const galleryTitle = galleryHeading?.querySelector<HTMLElement>("h2");
-    const galleryIntro = galleryHeading?.querySelector<HTMLElement>(":scope > p");
-    if (galleryHeading && galleryLabel && galleryTitle && galleryIntro) {
-      const headingReveal = gsap.timeline({ scrollTrigger: { trigger: galleryHeading, start: "top 82%", once: true } });
-      headingReveal.fromTo(galleryLabel, { y: 10, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .38, ease: "power2.out", immediateRender: false })
-        .fromTo(galleryTitle, { y: 22, clipPath: "inset(0 0 100% 0)" }, { y: 0, clipPath: "inset(0 0 0% 0)", duration: .62, ease: "power3.out", immediateRender: false }, "-=.12")
-        .fromTo(galleryIntro, { y: 14, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .42, ease: "power2.out", immediateRender: false }, "-=.28");
-    }
-    const backdrop = root.current?.querySelector<HTMLElement>(".gallery-backdrop");
-    if (backdrop) gsap.fromTo(backdrop, { clipPath: "inset(12% 6% 12% 6% round 36px)" }, {
-      clipPath: "inset(0% 0% 0% 0% round 36px)", duration: .8, ease: "power3.out", immediateRender: false,
-      scrollTrigger: { trigger: backdrop, start: "top 78%", once: true },
+    const galleryBackdrop = root.current?.querySelector<HTMLElement>(".gallery-backdrop");
+    if (galleryHeading) gsap.fromTo(galleryHeading, { autoAlpha: 0, y: 14 }, {
+      autoAlpha: 1, y: 0, duration: .58, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+      scrollTrigger: { trigger: galleryHeading, start: "top 82%", once: true },
+    });
+    if (galleryBackdrop) gsap.fromTo(galleryBackdrop, { autoAlpha: 0, y: 14 }, {
+      autoAlpha: 1, y: 0, duration: .58, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+      scrollTrigger: { trigger: galleryBackdrop, start: "top 78%", once: true },
     });
     return () => {
       transitionTimeline.current?.kill();
@@ -149,15 +142,15 @@ export function ProjectGallery({ projects, unavailable }: { projects: Project[];
         const enter = gsap.timeline({ onComplete: () => { transitioning.current = false; setIsTransitioning(false); } });
         transitionTimeline.current = enter;
         if (nextDetails) enter.set(nextDetails, { autoAlpha: 1, y: 0, clearProps: "opacity,visibility,transform" }, 0);
-        enter.fromTo(nextStage, { autoAlpha: 0, xPercent: direction * 8, rotateY: -direction * 7, clipPath: direction > 0 ? "inset(0 0 0 44%)" : "inset(0 44% 0 0)" }, {
-          autoAlpha: 1, xPercent: 0, rotateY: 0, clipPath: "inset(0 0 0 0)", duration: .72, ease: "power3.out",
-        }).fromTo(nextStage.parentElement?.querySelectorAll<HTMLElement>(".gallery-project-copy, .gallery-project-links, .gallery-side > *") ?? [], { autoAlpha: 0, y: 12 }, {
-          autoAlpha: 1, y: 0, duration: .4, stagger: .06, ease: "power2.out",
-        }, "-=.38");
+        enter.fromTo(nextStage, { autoAlpha: 0, xPercent: direction * 2.5 }, {
+          autoAlpha: 1, xPercent: 0, duration: .42, ease: "power2.out", clearProps: "transform",
+        }).fromTo(nextStage.parentElement?.querySelectorAll<HTMLElement>(".gallery-project-copy, .gallery-project-links") ?? [], { autoAlpha: 0, y: 8 }, {
+          autoAlpha: 1, y: 0, duration: .34, stagger: .04, ease: "power2.out",
+        }, "-=.3");
       });
     } });
-    transitionTimeline.current.to(stage, { autoAlpha: 0, xPercent: -direction * 8, rotateY: direction * 7, clipPath: direction > 0 ? "inset(0 42% 0 0)" : "inset(0 0 0 42%)", duration: .4, ease: "power2.in" }, 0);
-    if (details) transitionTimeline.current.to(details, { autoAlpha: 0, y: 10, duration: .28, ease: "power2.in" }, 0);
+    transitionTimeline.current.to(stage, { autoAlpha: 0, xPercent: -direction * 2.5, duration: .24, ease: "power2.in" }, 0);
+    if (details) transitionTimeline.current.to(details, { autoAlpha: 0, y: 6, duration: .2, ease: "power2.in" }, 0);
   }
 
   useEffect(() => {
@@ -234,7 +227,6 @@ function ProjectEmptyState({ unavailable, root }: { unavailable: boolean; root: 
 }
 export function ImmersiveProjectRail({ projects, unavailable }: { projects: Project[]; unavailable: boolean }) {
   const root = useRef<HTMLElement>(null);
-  const progress = useRef<HTMLSpanElement>(null);
 
   useGSAP(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -247,97 +239,90 @@ export function ImmersiveProjectRail({ projects, unavailable }: { projects: Proj
       });
       return;
     }
-    const mm = gsap.matchMedia();
-    gsap.fromTo(".immersive-heading h2, .immersive-heading>p", { autoAlpha: 0, y: 22 }, {
-      autoAlpha: 1, y: 0, duration: .65, stagger: .08, ease: "power3.out", immediateRender: false,
-      scrollTrigger: { trigger: root.current, start: "top 72%", once: true },
+    const section = root.current;
+    if (!section) return;
+    const heading = section.querySelector<HTMLElement>(".immersive-heading");
+    const headingContent = heading?.querySelectorAll<HTMLElement>(".story-index, h2, p");
+    if (heading && headingContent?.length) gsap.fromTo(headingContent, { autoAlpha: 0, y: 16 }, {
+      autoAlpha: 1, y: 0, duration: .48, stagger: .07, ease: "power2.out", immediateRender: false,
+      scrollTrigger: { trigger: heading, start: "top 78%", once: true },
     });
-    mm.add("(min-width: 1000px)", () => {
-      const panels = gsap.utils.toArray<HTMLElement>(".immersive-panel", root.current);
-      // A very long pin can feel like scroll hijacking; keep larger portfolios in
-      // their normal vertical flow while retaining the horizontal story for a few projects.
-      if (projects.length > 4) {
-        panels.forEach((panel) => {
-          const image = panel.querySelector<HTMLElement>(".immersive-artwork");
-          const copy = panel.querySelector<HTMLElement>(".immersive-panel-copy");
-          if (image) gsap.fromTo(image, { clipPath: "inset(0 0 0 100%)" }, {
-            clipPath: "inset(0 0 0 0)", duration: .72, ease: "power3.out", immediateRender: false,
-            scrollTrigger: { trigger: panel, start: "top 82%", once: true },
-          });
-          if (copy) gsap.fromTo(copy.children, { autoAlpha: 0, y: 14 }, {
-            autoAlpha: 1, y: 0, duration: .42, stagger: .05, ease: "power2.out", immediateRender: false,
-            scrollTrigger: { trigger: panel, start: "top 76%", once: true },
-          });
-        });
+    const responsiveLayout = gsap.matchMedia();
+    responsiveLayout.add("(min-width: 1000px)", () => {
+      const viewport = section.querySelector<HTMLElement>(".immersive-viewport");
+      const track = section.querySelector<HTMLElement>(".immersive-track");
+      if (!viewport || !track) return;
+
+      const scrollPositionBeforePin = window.scrollY;
+      section.classList.remove("immersive-projects--stacked");
+      section.classList.add("immersive-projects--horizontal");
+      const measureTravelDistance = () => Math.max(
+        0,
+        track.getBoundingClientRect().width - viewport.getBoundingClientRect().width,
+      );
+      let travelDistance = measureTravelDistance();
+      const refreshTravelDistance = () => {
+        travelDistance = measureTravelDistance();
+      };
+      if (travelDistance < 1) {
+        section.classList.remove("immersive-projects--horizontal");
+        section.classList.add("immersive-projects--stacked");
         return;
       }
-      if (projects.length === 1) {
-        const artwork = root.current?.querySelector<HTMLElement>(".immersive-artwork");
-        if (artwork) gsap.fromTo(artwork, { clipPath: "inset(0 0 0 100%)" }, {
-          clipPath: "inset(0 0 0 0)", duration: .9, ease: "power3.out", immediateRender: false,
-          scrollTrigger: { trigger: artwork, start: "top 78%", once: true },
-        });
-        return;
+
+      const gallery = section.parentElement?.querySelector<HTMLElement>("#web-design");
+      const originalGalleryMarginTop = gallery?.style.marginTop ?? "";
+      const originalGalleryMarginBottom = gallery?.style.marginBottom ?? "";
+      if (gallery) {
+        const handoffGap = Math.max(0, gallery.getBoundingClientRect().top - viewport.getBoundingClientRect().bottom);
+        gallery.style.marginTop = `${-handoffGap}px`;
+        gallery.style.marginBottom = `${handoffGap}px`;
       }
-      if (projects.length < 2) return;
-      const section = root.current;
-      const track = section?.querySelector<HTMLElement>(".immersive-track");
-      const viewport = section?.querySelector<HTMLElement>(".immersive-viewport");
-      if (!section || !track || !viewport) return;
-      const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
-      if (!distance()) return;
-      const horizontal = gsap.to(track, {
-        x: () => -distance(), ease: "none",
+
+      // Re-measure once before ScrollTrigger refreshes, not during each scroll frame.
+      ScrollTrigger.addEventListener("refreshInit", refreshTravelDistance);
+      gsap.to(track, {
+        x: () => -travelDistance,
+        force3D: true,
+        ease: "none",
         scrollTrigger: {
           trigger: viewport,
-          start: "top top",
-          end: () => `+=${distance()}`,
-          scrub: true,
+          start: "top top+=104",
+          end: () => `+=${travelDistance}`,
           pin: viewport,
           pinSpacing: true,
+          scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onUpdate: (self) => { if (progress.current) progress.current.style.transform = `scaleX(${self.progress})`; },
         },
       });
-      panels.forEach((panel) => {
-        const image = panel.querySelector<HTMLElement>(".immersive-artwork");
-        const heading = panel.querySelector<HTMLElement>(".immersive-panel-copy");
-        const ambient = panel.querySelector<HTMLElement>(".immersive-ambient");
-        if (image) gsap.fromTo(image, { clipPath: "inset(0 0 0 100%)", scale: 1.045 }, {
-          clipPath: "inset(0 0 0 0)", scale: 1, ease: "power2.out", immediateRender: false,
-          scrollTrigger: { trigger: panel, containerAnimation: horizontal, start: "left 82%", once: true },
+
+      let scrollRestoreFrame = 0;
+      if (scrollPositionBeforePin > 0) {
+        scrollRestoreFrame = window.requestAnimationFrame(() => {
+          if (window.scrollY === 0) {
+            window.scrollTo({ top: scrollPositionBeforePin, behavior: "instant" });
+            ScrollTrigger.update();
+          }
         });
-        if (heading) gsap.fromTo(heading.children, { autoAlpha: 0, y: 20 }, {
-          autoAlpha: 1, y: 0, duration: .45, stagger: .06, ease: "power2.out", immediateRender: false,
-          scrollTrigger: { trigger: panel, containerAnimation: horizontal, start: "left 72%", once: true },
-        });
-        if (ambient) gsap.to(ambient, {
-          yPercent: -14, xPercent: 7, scale: 1.12, ease: "none",
-          scrollTrigger: { trigger: panel, containerAnimation: horizontal, start: "left right", end: "right left", scrub: true },
-        });
-        const imageLayer = panel.querySelector<HTMLElement>(".immersive-artwork-link");
-        if (imageLayer) gsap.to(imageLayer, {
-          yPercent: -2.5, ease: "none",
-          scrollTrigger: { trigger: panel, containerAnimation: horizontal, start: "left right", end: "right left", scrub: true },
-        });
-      });
-    }, root);
-    mm.add("(max-width: 999px)", () => {
-      const panels = gsap.utils.toArray<HTMLElement>(".immersive-panel", root.current);
-      panels.forEach((panel) => {
-        const image = panel.querySelector<HTMLElement>(".immersive-artwork");
-        if (image) gsap.fromTo(image, { clipPath: "inset(0 0 100% 0)" }, {
-          clipPath: "inset(0 0 0 0)", duration: .72, ease: "power3.out", immediateRender: false,
-          scrollTrigger: { trigger: panel, start: "top 84%", once: true },
-        });
-      });
-    }, root);
-    return () => mm.revert();
+      }
+
+      return () => {
+        window.cancelAnimationFrame(scrollRestoreFrame);
+        ScrollTrigger.removeEventListener("refreshInit", refreshTravelDistance);
+        section.classList.remove("immersive-projects--horizontal");
+        section.classList.add("immersive-projects--stacked");
+        if (gallery) {
+          gallery.style.marginTop = originalGalleryMarginTop;
+          gallery.style.marginBottom = originalGalleryMarginBottom;
+        }
+      };
+    });
+    return () => responsiveLayout.revert();
   }, { scope: root, dependencies: [projects.length], revertOnUpdate: true });
 
   if (!projects.length) return <section ref={root} className="story-section immersive-projects project-empty-apps" id="work" aria-labelledby="immersive-heading"><div className="immersive-heading story-inner"><div><div className="story-index"><span>04</span><i/> WEBSITE / WEB APP</div><h2 id="immersive-heading">Built to <em>work.</em></h2></div><p>Web applications and digital products built to solve real problems.</p></div><div className="story-inner project-category-empty"><span>{unavailable ? "PROJECTS TEMPORARILY UNAVAILABLE" : "NO FEATURED WEB APPS YET"}</span><p>{unavailable ? "Project data could not be loaded. Please try again later." : "Assign a project to Website / Web App in admin and feature it to add it to this section."}</p></div></section>;
-  return <section className={`story-section immersive-projects${projects.length > 4 ? " immersive-projects--stacked" : ""}`} id="work" ref={root} aria-labelledby="immersive-heading">
+  return <section className="story-section immersive-projects immersive-projects--stacked" id="work" ref={root} aria-labelledby="immersive-heading">
     <div className="immersive-heading story-inner"><div><div className="story-index"><span>04</span><i/> WEBSITE / WEB APP</div><h2 id="immersive-heading">Built to <em>work.</em></h2></div><p>Web applications and digital products built to solve real problems.</p></div>
     <div className="immersive-viewport"><div className="immersive-track">
       {projects.map((project, index) => <article className="immersive-panel" key={project.id}>
@@ -347,7 +332,6 @@ export function ImmersiveProjectRail({ projects, unavailable }: { projects: Proj
         <div className="immersive-panel-copy"><span>{String(index + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span><h3>{project.title}</h3><p>{project.description}</p><div className="immersive-project-actions">{project.live_url ? <a className="immersive-view-project" href={project.live_url} target="_blank" rel="noopener noreferrer">VIEW PROJECT <b aria-hidden="true">↗</b></a> : <Link className="immersive-view-project" href={`/projects/${encodeURIComponent(project.slug)}`}>VIEW PROJECT <b aria-hidden="true">↗</b></Link>}{project.github_url && <a href={project.github_url} target="_blank" rel="noopener noreferrer">GITHUB</a>}<Link href={`/projects/${encodeURIComponent(project.slug)}`}>PROJECT NOTES</Link></div></div>
       </article>)}
     </div></div>
-    <div className="immersive-progress" aria-hidden="true"><span ref={progress}/></div>
-    <div className="immersive-foot story-inner"><span>SCROLL TO MOVE THROUGH THE STORIES</span><span>VERTICAL INPUT / HORIZONTAL JOURNEY</span></div>
+    <div className="immersive-foot story-inner"><span>SCROLL TO EXPLORE THE STORIES</span><span>A VERTICAL PROJECT JOURNEY</span></div>
   </section>;
 }

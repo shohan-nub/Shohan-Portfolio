@@ -1,4 +1,5 @@
 import { CinematicIntro } from "@/components/cinematic-intro";
+import { PortfolioIntroLoader } from "@/components/portfolio-intro-loader";
 import { PortfolioStory } from "@/components/portfolio-story";
 import { getCachedPortfolioYear, getCachedPublicProjects, getCachedPublicSkills } from "@/services/public-portfolio-cache";
 
@@ -13,6 +14,7 @@ export default async function Home() {
   const skills = skillResult.status === "fulfilled" ? skillResult.value : [];
 
   return <main>
+    <PortfolioIntroLoader />
     <CinematicIntro />
     <PortfolioStory projects={projects} skills={skills} currentYear={currentYear} projectUnavailable={projectResult.status === "rejected"} skillsUnavailable={skillResult.status === "rejected"} />
   </main>;

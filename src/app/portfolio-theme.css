@@ -83,19 +83,16 @@
   filter: blur(20px);
 }
 .art-ring { border-color: rgba(8,126,164,.2); }
-.art-ring.ring-one { animation: orbit-drift 22s ease-in-out infinite alternate; }
 .ring-two { border-color: rgba(255,255,255,.74); }
-.art-ring.ring-two { animation: orbit-drift-reverse 28s ease-in-out infinite alternate; }
 .art-orb {
   background: radial-gradient(circle at 34% 30%, #F8FCFE 0, #A6E6EE 24%, #00B4D8 54%, #087EA4 82%);
   box-shadow: inset -18px -12px 24px rgba(16,42,67,.2), 0 0 90px rgba(0,180,216,.28);
 }
 .art-cross { color: rgba(8,126,164,.52); }
-@keyframes orbit-drift { to { rotate: 3deg; } }
-@keyframes orbit-drift-reverse { to { rotate: -3deg; } }
 .hero-grain { opacity: .035; }
 .role-label { color: #647987; }
 .role-text { color: #102A43; }
+.role-text .role-option:not(:first-child) { visibility: hidden; }
 .button-primary {
   color: #F5F9FB;
   background: #102A43;
@@ -181,7 +178,6 @@
   color: #172B3A;
 }
 .story-about { background: #F5F9FB; }
-.story-about[id], .skills-story[id], .capability-section[id], .immersive-projects[id], .project-gallery[id], .story-contact[id] { scroll-margin-top: 104px; }
 .story-about .about-layout { grid-template-columns: minmax(280px,.82fr) minmax(0,1.15fr); align-items: center; gap: clamp(42px,7vw,104px); }
 .story-about .about-copy { min-width: 0; }
 .about-copy h2 { margin-bottom: 28px; }
@@ -448,6 +444,171 @@
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .intro-shell .site-header nav>a:not(.nav-contact)::after { transition: none; }
-  .art-ring.ring-one, .art-ring.ring-two { animation: none; }
   .story-contact .contact-form button { transition: none; }
+}
+.portfolio-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #102a43;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(255,255,255,.92), rgba(234,245,249,.86) 42%, rgba(209,242,245,.94)),
+    linear-gradient(135deg, #f8fcfe, #d1f2f5);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+.portfolio-intro-overlay::before,
+.portfolio-intro-overlay::after {
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(255,255,255,.78);
+  border-radius: 24px;
+  content: "";
+  pointer-events: none;
+}
+.portfolio-intro-overlay::after {
+  inset: 21px;
+  border-color: rgba(8,126,164,.08);
+}
+.portfolio-intro-glow {
+  position: absolute;
+  width: min(70vw, 720px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(166,230,238,.42), rgba(0,180,216,.08) 42%, transparent 70%);
+  filter: blur(12px);
+  pointer-events: none;
+}
+.portfolio-intro-content {
+  position: relative;
+  z-index: 1;
+  width: min(84%, 620px);
+  text-align: center;
+}
+.portfolio-intro-caption,
+.portfolio-intro-index {
+  color: #647987;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .19em;
+}
+.portfolio-intro-caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 22px;
+}
+.portfolio-intro-caption i,
+.portfolio-intro-index i {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #00b4d8;
+}
+.portfolio-intro-identity {
+  margin: 0;
+  color: #102a43;
+  font-size: clamp(32px, 6vw, 64px);
+  font-weight: 500;
+  letter-spacing: -.065em;
+  line-height: 1;
+}
+.portfolio-intro-progress {
+  width: min(240px, 58vw);
+  height: 2px;
+  margin: 34px auto 0;
+  overflow: hidden;
+  background: rgba(8,126,164,.15);
+}
+.portfolio-intro-progress-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #8acddd, #00b4d8, #087ea4);
+}
+.portfolio-intro-index {
+  position: absolute;
+  z-index: 1;
+  right: 42px;
+  bottom: 38px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 8px;
+}
+
+/* Cohesive glass finish for the public portfolio surfaces. */
+.intro-shell .site-header {
+  border-color: rgba(255, 255, 255, .9);
+  background: linear-gradient(135deg, rgba(250, 253, 254, .9), rgba(234, 245, 249, .82));
+  box-shadow: 0 9px 28px rgba(16, 42, 67, .07), inset 0 1px rgba(255, 255, 255, .98);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+  backdrop-filter: blur(12px) saturate(125%);
+}
+.intro-shell .site-header.is-scrolled {
+  background: rgba(248, 252, 253, .96);
+  box-shadow: 0 10px 30px rgba(16, 42, 67, .09), inset 0 1px rgba(255, 255, 255, .98);
+}
+.intro-shell .site-header nav .nav-contact {
+  border-color: rgba(255, 255, 255, .36);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .22);
+}
+.intro-shell :is(a, button, input, textarea):focus-visible {
+  outline: 3px solid rgba(0, 140, 176, .38);
+  outline-offset: 3px;
+}
+.about-details article {
+  border-color: rgba(255, 255, 255, .96);
+  background: linear-gradient(145deg, rgba(255, 255, 255, .84), rgba(209, 242, 245, .52));
+  box-shadow: 0 12px 30px rgba(16, 42, 67, .055), inset 0 1px rgba(255, 255, 255, .98);
+}
+.about-portrait-card {
+  border-color: rgba(255, 255, 255, .98);
+  box-shadow: 0 20px 54px rgba(16, 42, 67, .085), inset 0 1px rgba(255, 255, 255, .98);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.story-contact .contact-form {
+  border-color: rgba(255, 255, 255, .92);
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 12px 30px rgba(8, 76, 104, .055), inset 0 1px rgba(255, 255, 255, .98);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.story-contact .contact-form input,
+.story-contact .contact-form textarea {
+  border-radius: 8px 8px 0 0;
+  background: rgba(255, 255, 255, .34);
+}
+.story-contact .contact-form input::placeholder,
+.story-contact .contact-form textarea::placeholder {
+  color: #728794;
+}
+.portfolio-intro-overlay {
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(255,255,255,.97), rgba(234,245,249,.95) 42%, rgba(209,242,245,.97)),
+    linear-gradient(135deg, #f8fcfe, #d1f2f5);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+@media (max-width: 600px) {
+  .portfolio-intro-overlay::before,
+  .portfolio-intro-overlay::after { inset: 12px; border-radius: 17px; }
+  .portfolio-intro-overlay::after { inset: 13px; }
+  .portfolio-intro-caption { font-size: 7px; letter-spacing: .14em; gap: 8px; }
+  .portfolio-intro-index { right: 26px; bottom: 26px; font-size: 7px; }
+}
+@media (max-width: 760px) {
+  .intro-shell .site-header { -webkit-backdrop-filter: blur(8px) saturate(120%); backdrop-filter: blur(8px) saturate(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-intro-overlay { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .portfolio-intro-glow { filter: none; }
 }
