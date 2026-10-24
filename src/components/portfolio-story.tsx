@@ -6,7 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { ContactForm } from "@/components/contact-form";
-import { CapabilityShowcase, ImmersiveProjectRail, ProjectGallery } from "@/components/portfolio-experiences";
+import { CapabilityShowcase, ProjectGallery, WebAppProjects } from "@/components/portfolio-experiences";
 import type { Project } from "@/repositories/projects.repository";
 import type { Skill } from "@/repositories/skills.repository";
 
@@ -54,10 +54,10 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
         scrollTrigger: { trigger: about, start: "top 76%", once: true },
       });
       if (portrait) entrance.fromTo(portrait, { autoAlpha: 0, y: 24 }, {
-        autoAlpha: 1, y: 0, duration: .7, clearProps: "opacity,visibility,transform", immediateRender: false,
+        autoAlpha: 1, y: 0, duration: .6, clearProps: "opacity,visibility,transform", immediateRender: false,
       }, 0);
       if (textTargets.length) entrance.fromTo(textTargets, { autoAlpha: 0, y: 16 }, {
-        autoAlpha: 1, y: 0, duration: .62, stagger: .07, clearProps: "opacity,visibility,transform", immediateRender: false,
+        autoAlpha: 1, y: 0, duration: .54, stagger: .06, clearProps: "opacity,visibility,transform", immediateRender: false,
       }, .12);
     }
 
@@ -68,16 +68,38 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
       const cards = skills.querySelectorAll<HTMLElement>(".skill-editorial-card");
       const skillEntrance = gsap.timeline({ scrollTrigger: { trigger: skills, start: "top 72%", once: true } });
       if (heading) skillEntrance.fromTo(heading, { autoAlpha: 0, y: 18 }, {
-        autoAlpha: 1, y: 0, duration: .52, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+        autoAlpha: 1, y: 0, duration: .46, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
       }, 0);
       if (intro) skillEntrance.fromTo(intro, { autoAlpha: 0, y: 10 }, {
-        autoAlpha: 1, y: 0, duration: .42, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
+        autoAlpha: 1, y: 0, duration: .37, ease: "power2.out", clearProps: "opacity,visibility,transform", immediateRender: false,
       }, .12);
       if (cards.length) skillEntrance.fromTo(cards, { autoAlpha: 0, y: 20 }, {
-        autoAlpha: 1, y: 0, duration: .5, stagger: .07, ease: "power2.out",
+        autoAlpha: 1, y: 0, duration: .45, stagger: .06, ease: "power2.out",
         clearProps: "opacity,visibility,transform", immediateRender: false,
       }, .24);
     }
+
+    const revealSection = (sectionSelector: string, targetSelector: string) => {
+      const section = root.current?.querySelector<HTMLElement>(sectionSelector);
+      if (!section) return;
+      const targets = section.querySelectorAll<HTMLElement>(targetSelector);
+      if (!targets.length) return;
+      const y = window.matchMedia("(max-width: 700px)").matches ? 12 : 20;
+      gsap.fromTo(targets, { autoAlpha: 0, y }, {
+        autoAlpha: 1,
+        y: 0,
+        duration: .48,
+        stagger: .06,
+        ease: "power2.out",
+        clearProps: "opacity,visibility,transform",
+        immediateRender: false,
+        scrollTrigger: { trigger: section, start: "top 80%", once: true },
+      });
+    };
+
+    revealSection(".capability-section", ".capability-intro > *, .capability-card");
+    revealSection(".featured-apps", ".featured-apps-heading > *, .featured-app-card");
+    revealSection(".project-gallery", ".gallery-head > *, .gallery-backdrop");
 
     const contact = root.current?.querySelector<HTMLElement>(".story-contact");
     if (contact) {
@@ -85,21 +107,21 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
       const form = contact.querySelector<HTMLElement>(".contact-form");
       const endnote = contact.querySelector<HTMLElement>(".contact-endnote");
       const contactEntrance = gsap.timeline({ defaults: { ease: "power2.out" }, scrollTrigger: { trigger: contact, start: "top 78%", once: true } });
-      if (copy) contactEntrance.fromTo(copy, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .62, clearProps: "opacity,visibility,transform", immediateRender: false }, 0);
-      if (form) contactEntrance.fromTo(form, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .62, clearProps: "opacity,visibility,transform", immediateRender: false }, .12);
-      if (endnote) contactEntrance.fromTo(endnote, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .42, clearProps: "opacity,visibility,transform", immediateRender: false }, .24);
+      if (copy) contactEntrance.fromTo(copy, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .54, clearProps: "opacity,visibility,transform", immediateRender: false }, 0);
+      if (form) contactEntrance.fromTo(form, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .54, clearProps: "opacity,visibility,transform", immediateRender: false }, .1);
+      if (endnote) contactEntrance.fromTo(endnote, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .37, clearProps: "opacity,visibility,transform", immediateRender: false }, .2);
     }
 
     const footer = root.current?.querySelector<HTMLElement>(".portfolio-footer");
     if (footer) gsap.fromTo(footer, { autoAlpha: 0, y: 8 }, {
-      autoAlpha: 1, y: 0, duration: .38, ease: "power2.out", clearProps: "opacity,visibility,transform",
+      autoAlpha: 1, y: 0, duration: .32, ease: "power2.out", clearProps: "opacity,visibility,transform",
       immediateRender: false, scrollTrigger: { trigger: footer, start: "top 94%", once: true },
     });
   }, { scope: root });
 
   const displayProjects = projects;
   const webAppProjects = displayProjects.filter((project) => (project.project_section ?? "web_app") === "web_app");
-  const webDesignProjects = displayProjects.filter((project) => (project.project_section ?? "web_app") === "web_design");
+  const webDesignProjects = displayProjects.filter((project) => project.project_section === "web_design");
   const additionalSkills = skillsUnavailable ? [] : skills.filter((skill) => !curatedSkillNames.has(skill.name.trim().toLowerCase()));
   const skillIcons = new Map(skills.map((skill) => [skill.name.trim().toLowerCase(), skill.icon]));
   const renderSkillChips = (items: readonly string[], secondary = false) => <div className={`skill-chip-list${secondary ? " skill-chip-list-secondary" : ""}`}>
@@ -191,7 +213,7 @@ export function PortfolioStory({ projects, skills, currentYear, projectUnavailab
     </section>
 
     <CapabilityShowcase />
-    <ImmersiveProjectRail projects={webAppProjects} unavailable={projectUnavailable}/>
+    <WebAppProjects projects={webAppProjects} unavailable={projectUnavailable}/>
     <ProjectGallery projects={webDesignProjects} unavailable={projectUnavailable}/>
 
     <section className="contact-section story-contact" id="contact"><div className="contact-inner"><div className="contact-copy-block"><div className="story-index" data-reveal><span>06</span><i/> THE NEXT CHAPTER</div><h2 data-reveal>Let’s make<br/><em>something matter.</em></h2><p className="contact-copy" data-reveal>Have a good one in mind? Tell me about it. I’ll get back to you soon.</p><a className="contact-email" href="#contact-form" data-reveal>OPEN A CONVERSATION <span>↗</span></a></div><ContactForm /></div><div className="contact-endnote">BASED IN DHAKA · BUILDING FOR EVERYWHERE <span>© {currentYear}</span></div></section>

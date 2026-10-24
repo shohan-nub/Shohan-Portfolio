@@ -42,64 +42,64 @@ function DhakaClock() {
 
 export function CinematicIntro() {
   const root = useRef<HTMLElement>(null);
-  const roleText = useRef<HTMLSpanElement>(null);
+  const [roleIndex, setRoleIndex] = useState(0);
 
-  useGSAP(() => {
-    const header = root.current?.querySelector<HTMLElement>(".site-header");
-    if (header) ScrollTrigger.create({
-      trigger: document.documentElement,
-      start: 40,
-      toggleClass: { targets: header, className: "is-scrolled" },
-    });
+  useEffect(() => {
+    let timer: number | undefined;
+    let loaderObserver: MutationObserver | undefined;
+    const startRotation = () => {
+      if (timer !== undefined) return;
+      timer = window.setInterval(() => {
+        setRoleIndex((current) => (current + 1) % roles.length);
+      }, 2_500);
+    };
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const scope = root.current;
-    if (!scope) return;
-    const titleLines = scope.querySelectorAll<HTMLElement>(".title-line");
-    const introduction = scope.querySelector<HTMLElement>(".hero-introduction");
-    const role = scope.querySelector<HTMLElement>(".role-block");
-    const actions = scope.querySelector<HTMLElement>(".hero-actions");
-    const portrait = scope.querySelector<HTMLElement>(".hero-portrait");
-    const timeline = gsap.timeline({ defaults: { ease: "power2.out" } });
-
-    if (titleLines.length) timeline.fromTo(titleLines, { autoAlpha: 0, y: 22 }, {
-      autoAlpha: 1, y: 0, duration: .62, stagger: .08, clearProps: "opacity,visibility,transform",
-    }, 0);
-    if (introduction) timeline.fromTo(introduction, { autoAlpha: 0, y: 12 }, {
-      autoAlpha: 1, y: 0, duration: .48, clearProps: "opacity,visibility,transform",
-    }, .3);
-    if (role) timeline.fromTo(role, { autoAlpha: 0, y: 10 }, {
-      autoAlpha: 1, y: 0, duration: .42, clearProps: "opacity,visibility,transform",
-    }, .48);
-    if (actions) timeline.fromTo(actions, { autoAlpha: 0, y: 10 }, {
-      autoAlpha: 1, y: 0, duration: .42, clearProps: "opacity,visibility,transform",
-    }, .58);
-    if (portrait) timeline.fromTo(portrait, { autoAlpha: 0, y: 18 }, {
-      autoAlpha: 1, y: 0, duration: .76, ease: "power2.out", clearProps: "opacity,visibility,transform",
-    }, .14);
-
-    const roleOptions = roleText.current?.querySelectorAll<HTMLElement>(".role-option");
-    if (roleOptions?.length) {
-      roleOptions.forEach((option, index) => gsap.set(option, {
-        autoAlpha: index === 0 ? 1 : 0,
-        y: 0,
-      }));
-
-      const roleTimeline = gsap.timeline({ repeat: -1, repeatDelay: .75, delay: .65 });
-      roleOptions.forEach((option, index) => {
-        const next = roleOptions[(index + 1) % roleOptions.length];
-        roleTimeline
-          .to(option, { autoAlpha: 0, y: -5, duration: .2, ease: "power1.in", delay: 1.25 })
-          .set(next, { autoAlpha: 1, y: 0 })
-          .fromTo(
-            next.querySelectorAll<HTMLElement>(".role-char"),
-            { autoAlpha: 0, y: 8 },
-            { autoAlpha: 1, y: 0, duration: .25, stagger: .025, ease: "power2.out" },
-          );
+    if (document.querySelector(".portfolio-intro-overlay")) {
+      loaderObserver = new MutationObserver(() => {
+        if (document.querySelector(".portfolio-intro-overlay")) return;
+        loaderObserver?.disconnect();
+        startRotation();
       });
+      loaderObserver.observe(document.body, { childList: true, subtree: true });
+    } else {
+      startRotation();
     }
 
+    return () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      loaderObserver?.disconnect();
+    };
+  }, []);
+
+  useGSAP(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const hero = root.current?.querySelector<HTMLElement>(".hero");
+    if (!hero) return;
+
+    const entrance = gsap.timeline({ defaults: { ease: "power3.out" } });
+    entrance
+      .fromTo(".hero-kicker", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .55 }, 0)
+      .fromTo(".hero-title .title-line", { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: .72, stagger: .12 }, .08)
+      .fromTo(".hero-introduction", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: .55 }, .38)
+      .fromTo(".role-block", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .48 }, .48)
+      .fromTo(".hero-actions .button", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: .48, stagger: .08 }, .55)
+      .fromTo(".hero-art", { scale: .97 }, { scale: 1, duration: .9, ease: "power2.out" }, .12)
+      .fromTo(".hero-portrait", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: .72, ease: "power2.out" }, .25)
+      .fromTo(".hero-clock", { autoAlpha: 0, y: -8 }, { autoAlpha: 1, y: 0, duration: .48 }, .58)
+      .fromTo(".scroll-cue, .hero-coordinate", { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .42, stagger: .08 }, .72);
+
+    if (!window.matchMedia("(max-width: 700px)").matches) {
+      gsap.to(".hero-art", {
+        yPercent: 5,
+        ease: "none",
+        scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: .5 },
+      });
+      gsap.to(".hero-portrait", {
+        yPercent: -2,
+        ease: "none",
+        scrollTrigger: { trigger: hero, start: "top top", end: "bottom top", scrub: .5 },
+      });
+    }
   }, { scope: root });
 
   return <section className="intro-shell" ref={root}>
@@ -108,12 +108,12 @@ export function CinematicIntro() {
       <nav aria-label="Main navigation"><a href="#about">About</a><a href="#capabilities">Expertise</a><a href="#work">Work</a><a href="#contact" className="nav-contact">Let&apos;s Talk <span>&#8599;</span></a></nav>
     </header>
     <section className="hero" id="top" aria-labelledby="hero-title">
-      <div className="hero-grain" aria-hidden="true"/><div className="hero-visual"><div className="hero-art" aria-hidden="true"><div className="art-ring ring-one"/><div className="art-ring ring-two"/><div className="art-orb"/><div className="art-cross">&#10033;</div></div><div className="hero-portrait" aria-hidden="true"><Image src="/me.png" alt="" fill priority sizes="(max-width: 600px) 62vw, (max-width: 900px) 36vw, 44vw" /></div><DhakaClock /></div>
+      <div className="hero-visual"><div className="hero-art" aria-hidden="true"><div className="art-ring ring-one"/><div className="art-ring ring-two"/><div className="art-orb"/><div className="art-cross">&#10033;</div></div><div className="hero-portrait" aria-hidden="true"><Image src="/me.png" alt="" fill priority sizes="(max-width: 600px) 62vw, (max-width: 900px) 36vw, 44vw" /></div><DhakaClock /></div>
       <div className="hero-content">
         <p className="eyebrow hero-kicker"><span className="status-dot"/> INDEPENDENT DEVELOPER <span className="kicker-divider">/</span> DHAKA, BD</p>
         <h1 id="hero-title" className="hero-title" aria-label={headline.join(" ")}>{headline.map((line) => <span className="title-line" key={line}>{line}</span>)}</h1>
         <p className="hero-introduction">I build digital experiences, full-stack applications, and AI-powered automation systems.</p>
-        <div className="hero-lower"><div className="role-block"><span className="role-label">CURRENTLY BUILDING</span><span className="role-text" ref={roleText} aria-hidden="true">{roles.map((item) => <span className="role-option" key={item}>{Array.from(item).map((char, index) => <span className="role-char" key={`${item}-${index}`}>{char === " " ? "\u00a0" : char}</span>)}</span>)}</span><span className="sr-only">Full-Stack Developer, AI Automation Engineer, and RAG System Builder</span></div>
+        <div className="hero-lower"><div className="role-block"><span className="role-label">CURRENTLY BUILDING</span><span className="role-text"><span className="role-option" key={roles[roleIndex]}>{roles[roleIndex]}</span></span></div>
           <div className="hero-actions"><a className="button button-primary" href="/cv.pdf" download="cv.pdf">DOWNLOAD CV <span>&#8595;</span></a><a className="button button-quiet" href="#contact">GET IN TOUCH <span>&#8599;</span></a></div>
         </div>
       </div>
